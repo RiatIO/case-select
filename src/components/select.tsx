@@ -10,6 +10,7 @@ import {
 
 interface SelectContext {
   open: boolean;
+  toggleVisibility: () => void;
   toggleOpen: () => void;
   toggleClose: () => void;
 }
@@ -33,16 +34,27 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
 } = ({ children }) => {
   const [open, setOpen] = useState(false);
 
+  const handleToggleVisibility = useCallback(
+    () => setOpen((prevState) => !prevState),
+    []
+  );
   const handleOpen = useCallback(() => setOpen(true), []);
   const handleClose = useCallback(() => setOpen(false), []);
 
   const value = useMemo(
-    () => ({ open, toggleOpen: handleOpen, toggleClose: handleClose }),
-    [open, handleOpen, handleClose]
+    () => ({
+      open,
+      toggleOpen: handleOpen,
+      toggleClose: handleClose,
+      toggleVisibility: handleToggleVisibility,
+    }),
+    [open, handleOpen, handleClose, handleToggleVisibility]
   );
 
   return (
-    <SelectContext.Provider value={value}>{children}</SelectContext.Provider>
+    <div className="relative">
+      <SelectContext.Provider value={value}>{children}</SelectContext.Provider>
+    </div>
   );
 };
 
@@ -50,11 +62,11 @@ interface SelectTriggerProps {}
 export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
   children,
 }) => {
-  const { open, toggleOpen } = useSelectContext();
+  const { open, toggleVisibility } = useSelectContext();
 
   return (
     <button
-      onClick={toggleOpen}
+      onClick={toggleVisibility}
       className="flex justify-between w-full px-4 py-3 bg-gray-100 rounded-2xl cursor-pointer focus:bg-select-focus focus:outline-none"
       aria-expanded={open}
       aria-haspopup="menu"
@@ -66,12 +78,16 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
 };
 
 interface SelectContentProps {}
-export const SelectContent: React.FC<SelectContentProps> = () => {
-  return (
-    <div>
-      <h1>SelectContent</h1>
-    </div>
-  );
+export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
+  children,
+}) => {
+  const { open } = useSelectContext();
+
+  if (!open) {
+    return null;
+  }
+
+  return <div>{children}</div>;
 };
 
 interface SelectItemProps {}
