@@ -10,6 +10,8 @@ import {
 
 interface SelectContext {
   open: boolean;
+  selectedOption: string | null;
+  onSelectedOptionChange: (value: string) => void;
   toggleVisibility: () => void;
   toggleOpen: () => void;
   toggleClose: () => void;
@@ -33,6 +35,7 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   Item: typeof SelectItem;
 } = ({ children }) => {
   const [open, setOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleToggleVisibility = useCallback(
     () => setOpen((prevState) => !prevState),
@@ -41,14 +44,22 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   const handleOpen = useCallback(() => setOpen(true), []);
   const handleClose = useCallback(() => setOpen(false), []);
 
+  const handleSelectedOptionChange = useCallback((value: string) => {
+    setSelectedOption(value);
+    handleClose();
+  }, []);
+
   const value = useMemo(
-    () => ({
-      open,
-      toggleOpen: handleOpen,
-      toggleClose: handleClose,
-      toggleVisibility: handleToggleVisibility,
-    }),
-    [open, handleOpen, handleClose, handleToggleVisibility]
+    () =>
+      ({
+        open,
+        selectedOption,
+        toggleOpen: handleOpen,
+        toggleClose: handleClose,
+        toggleVisibility: handleToggleVisibility,
+        onSelectedOptionChange: handleSelectedOptionChange,
+      }) satisfies SelectContext,
+    [open, selectedOption, handleOpen, handleClose, handleToggleVisibility]
   );
 
   return (
@@ -88,18 +99,33 @@ export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
   }
 
   return (
-    <div className="absolute z-10 w-full mt-2 bg-white shadow-xl rounded-xl max-h-64">
+    <div
+      className="absolute z-10 w-full mt-2 bg-white shadow-xl rounded-xl max-h-64 overflow-hidden"
+      role="menu"
+    >
       {children}
     </div>
   );
 };
 
-interface SelectItemProps {}
-export const SelectItem: React.FC<SelectItemProps> = () => {
+interface SelectItemProps {
+  value: string;
+}
+export const SelectItem: React.FC<SelectItemProps> = ({ value }) => {
+  const { onSelectedOptionChange } = useSelectContext();
+
+  const handleSelectedOptionChange = useCallback(() => {
+    onSelectedOptionChange(value);
+  }, [onSelectedOptionChange, value]);
+
   return (
-    <div>
-      <h1>SelectContentItem</h1>
-    </div>
+    <button
+      role="menuitem"
+      onClick={handleSelectedOptionChange}
+      className="w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
+    >
+      {value}
+    </button>
   );
 };
 
