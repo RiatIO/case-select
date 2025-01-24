@@ -1,13 +1,50 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
+
+interface SelectContext {
+  open: boolean;
+  toggleOpen: () => void;
+  toggleClose: () => void;
+}
+
+const SelectContext = createContext<SelectContext | null>(null);
+const useSelectContext = () => {
+  const context = useContext(SelectContext);
+  if (!context) {
+    throw new Error(
+      "Select compound components cannot be rendered outside the Select component"
+    );
+  }
+  return context;
+};
+
 interface SelectProps {}
 export const Select: React.FC<SelectProps> & {
   Trigger: typeof SelectTrigger;
   Content: typeof SelectContent;
   Item: typeof SelectItem;
 } = () => {
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = useCallback(() => setOpen(true), []);
+  const handleClose = useCallback(() => setOpen(false), []);
+
+  const value = useMemo(
+    () => ({ open, toggleOpen: handleOpen, toggleClose: handleClose }),
+    [open, handleOpen, handleClose]
+  );
+
   return (
-    <div>
-      <h1>Select</h1>
-    </div>
+    <SelectContext.Provider value={value}>
+      <div>
+        <h1>Select</h1>
+      </div>
+    </SelectContext.Provider>
   );
 };
 
