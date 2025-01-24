@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useClickOutsideListener } from "../../hooks";
+import { cn } from "../utils";
 
 interface SelectContext {
   open: boolean;
@@ -84,7 +85,10 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
   return (
     <button
       onClick={toggleVisibility}
-      className="flex justify-between w-full px-4 py-3 bg-gray-100 rounded-2xl cursor-pointer focus:bg-select-focus focus:outline-none"
+      className={cn(
+        "flex justify-between w-full px-4 py-3 bg-gray-100 rounded-2xl cursor-pointer focus:bg-select-focus focus:outline-none",
+        open && "bg-select-focus"
+      )}
       aria-expanded={open}
       aria-haspopup="menu"
     >
