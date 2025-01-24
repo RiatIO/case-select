@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useClickOutsideListener } from "../hooks";
+import { useClickOutsideListener } from "../../hooks";
 
 interface SelectContext {
   open: boolean;
