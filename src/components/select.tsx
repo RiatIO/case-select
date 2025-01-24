@@ -87,7 +87,11 @@ export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
     return null;
   }
 
-  return <div>{children}</div>;
+  return (
+    <div className="absolute z-10 w-full mt-2 bg-white shadow-xl rounded-xl max-h-64">
+      {children}
+    </div>
+  );
 };
 
 interface SelectItemProps {}
