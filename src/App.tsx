@@ -1,23 +1,18 @@
-import { useState } from "react";
+import { Select } from "./components";
 
 function App() {
-  const [count, setCount] = useState<number>(0);
-
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card bg-mint-500">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main className="flex items-center justify-center w-screen h-screen">
+      <Select>
+        <Select.Trigger>Velg hunderase</Select.Trigger>
+
+        <Select.Content>
+          <Select.Item>Dog 1</Select.Item>
+          <Select.Item>Dog 2</Select.Item>
+          <Select.Item>Dog 3</Select.Item>
+        </Select.Content>
+      </Select>
+    </main>
   );
 }
 

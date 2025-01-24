@@ -1,5 +1,7 @@
+import { ChevronDown } from "lucide-react";
 import {
   createContext,
+  PropsWithChildren,
   useCallback,
   useContext,
   useMemo,
@@ -24,11 +26,11 @@ const useSelectContext = () => {
 };
 
 interface SelectProps {}
-export const Select: React.FC<SelectProps> & {
+export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   Trigger: typeof SelectTrigger;
   Content: typeof SelectContent;
   Item: typeof SelectItem;
-} = () => {
+} = ({ children }) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = useCallback(() => setOpen(true), []);
@@ -40,20 +42,26 @@ export const Select: React.FC<SelectProps> & {
   );
 
   return (
-    <SelectContext.Provider value={value}>
-      <div>
-        <h1>Select</h1>
-      </div>
-    </SelectContext.Provider>
+    <SelectContext.Provider value={value}>{children}</SelectContext.Provider>
   );
 };
 
 interface SelectTriggerProps {}
-export const SelectTrigger: React.FC<SelectTriggerProps> = () => {
+export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
+  children,
+}) => {
+  const { open, toggleOpen } = useSelectContext();
+
   return (
-    <div>
-      <h1>SelectTrigger</h1>
-    </div>
+    <button
+      onClick={toggleOpen}
+      className="flex justify-between w-full px-4 py-3 bg-gray-100 rounded-2xl cursor-pointer focus:bg-select-focus focus:outline-none"
+      aria-expanded={open}
+      aria-haspopup="menu"
+    >
+      {children}
+      <ChevronDown />
+    </button>
   );
 };
 
