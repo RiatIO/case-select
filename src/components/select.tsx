@@ -5,8 +5,10 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from "react";
+import { useClickOutsideListener } from "../hooks";
 
 interface SelectContext {
   open: boolean;
@@ -34,6 +36,8 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   Content: typeof SelectContent;
   Item: typeof SelectItem;
 } = ({ children }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
@@ -62,8 +66,10 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
     [open, selectedOption, handleOpen, handleClose, handleToggleVisibility]
   );
 
+  useClickOutsideListener(containerRef, handleClose);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <SelectContext.Provider value={value}>{children}</SelectContext.Provider>
     </div>
   );
