@@ -140,7 +140,7 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
     </button>
   );
 };
-  
+
 interface SelectContentProps {}
 export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
   children,
@@ -153,7 +153,7 @@ export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
 
   return (
     <div
-      className="absolute z-10 w-full mt-2 bg-white shadow-xl rounded-xl max-h-64 overflow-hidden"
+      className="absolute z-10 w-full mt-2 bg-white shadow-xl rounded-xl max-h-64 overflow-y-auto"
       role="menu"
     >
       {children}

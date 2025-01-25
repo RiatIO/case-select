@@ -1,7 +1,23 @@
+import { Select } from "../components";
+import { useDogBreedsQuery } from "../services";
+
 export const DogBreedSelect = () => {
+  const { data } = useDogBreedsQuery();
+
   return (
-    <div>
-      <h1>Dog Breed Select</h1>
-    </div>
+    <Select onChange={(value) => console.log(value)}>
+      <Select.Trigger>Velg hunderase</Select.Trigger>
+
+      <Select.Content>
+        {data?.map((dogBreed) => (
+          <Select.Item
+            key={dogBreed.id}
+            value={String(dogBreed.id)}
+            name={dogBreed.name}
+            description={dogBreed.temperament}
+          />
+        ))}
+      </Select.Content>
+    </Select>
   );
 };
