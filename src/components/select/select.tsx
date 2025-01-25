@@ -13,6 +13,7 @@ import {
   useElementOverflowingListener,
 } from "../../hooks";
 import { cn } from "../utils";
+import { textToColor } from "../../utils/text-to-color";
 
 interface SelectContext {
   open: boolean;
@@ -130,12 +131,16 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
       aria-expanded={open}
       aria-haspopup="menu"
     >
-      {selectedOptionName ?? children}
+      <div className="flex gap-2 flex-1 items-center">
+        {selectedOptionName ? renderTextColorDot(selectedOptionName) : null}
+        {selectedOptionName ?? children}
+      </div>
+
       <ChevronDown />
     </button>
   );
 };
-
+  
 interface SelectContentProps {}
 export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
   children,
@@ -184,25 +189,37 @@ export const SelectItem: React.FC<SelectItemProps> = ({
       role="menuitem"
       onClick={handleSelectedOptionChange}
       className={cn(
-        "w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
+        "flex items-center gap-2 w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
         // selectedOption === value && "bg-sky-500"
       )}
     >
-      <h3
-        ref={nameRef}
-        className="text-lg font-semibold truncate"
-        title={isNameOverflowing ? name : undefined}
-      >
-        {name}
-      </h3>
-      <p
-        ref={descriptionRef}
-        className="text-sm text-gray-500 truncate"
-        title={isDescriptionOverflowing ? description : undefined}
-      >
-        {description}
-      </p>
+      {renderTextColorDot(name)}
+      <div className="overflow-hidden">
+        <h3
+          ref={nameRef}
+          className="text-lg text-left font-semibold truncate"
+          title={isNameOverflowing ? name : undefined}
+        >
+          {name}
+        </h3>
+        <p
+          ref={descriptionRef}
+          className="text-sm text-gray-500 truncate"
+          title={isDescriptionOverflowing ? description : undefined}
+        >
+          {description}
+        </p>
+      </div>
     </button>
+  );
+};
+
+const renderTextColorDot = (text: string) => {
+  return (
+    <span
+      className="block min-w-4 max-h-4 min-h-4 rounded-xl"
+      style={{ backgroundColor: textToColor(text) }}
+    />
   );
 };
 
