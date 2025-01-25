@@ -40,6 +40,8 @@ const useSelectContext = () => {
 };
 
 interface SelectProps {
+  id?: string;
+  name?: string;
   option?: string;
   onChange?: (value: string) => void;
   loading?: boolean;
@@ -49,7 +51,7 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   Trigger: typeof SelectTrigger;
   Content: typeof SelectContent;
   Item: typeof SelectItem;
-} = ({ option, onChange, error, loading, children }) => {
+} = ({ name, id, option, onChange, error, loading, children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -117,6 +119,12 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   return (
     <div className="relative w-128" ref={containerRef}>
       <SelectContext.Provider value={value}>{children}</SelectContext.Provider>
+      <input
+        type="hidden"
+        name={name}
+        id={id}
+        value={selectedOptionValue ?? ""}
+      />
     </div>
   );
 };

@@ -1,11 +1,15 @@
 import { Select } from "../components";
 import { useDogBreedsQuery } from "../services";
 
-export const DogBreedSelect = () => {
+interface Props {
+  id?: string;
+}
+export const DogBreedSelect: React.FC<Props> = ({ id }) => {
   const { data, isLoading, isError } = useDogBreedsQuery();
 
   return (
     <Select
+      id={id}
       onChange={(value) => console.log(value)}
       loading={isLoading}
       error={isError}
