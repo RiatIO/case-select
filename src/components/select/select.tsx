@@ -39,7 +39,7 @@ const useSelectContext = () => {
   return context;
 };
 
-interface SelectProps {
+export interface SelectProps {
   id?: string;
   name?: string;
   option?: string;
@@ -144,6 +144,7 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
 
   return (
     <button
+      type="button"
       ref={triggerRef}
       onClick={toggleVisibility}
       disabled={loading || error}

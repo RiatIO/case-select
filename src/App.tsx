@@ -17,7 +17,9 @@ function App() {
           <label htmlFor="hunderase" className="text-sm">
             Hunderase
           </label>
-          <DogBreedSelect id="hunderase" />
+          <DogBreedSelect id="hunderase" name="hunderase" />
+
+          {/* <button>Submit</button> */}
         </form>
       </main>
     </>
