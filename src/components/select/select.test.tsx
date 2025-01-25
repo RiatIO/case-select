@@ -2,6 +2,16 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Select } from "./select";
 
+const options = [
+  { value: "dog1", name: "Dog 1" },
+  { value: "dog2", name: "Dog 2" },
+  {
+    value: "dog3",
+    name: "Dog 3",
+    description: "a very long text description to test overflowing....",
+  },
+];
+
 describe("Select", () => {
   it("should render the component", () => {
     render(
@@ -17,21 +27,62 @@ describe("Select", () => {
       <Select>
         <Select.Trigger>Velg hunderase</Select.Trigger>
         <Select.Content>
-          <Select.Item value="dog1" name="Dog 1" />
-          <Select.Item value="dog2" name="Dog 2" />
-          <Select.Item
-            value="dog3"
-            name="Dog 3"
-            description="a very long text description to test overflowing...."
-          />
+          {options.map((option) => (
+            <Select.Item key={option.value} {...option} />
+          ))}
         </Select.Content>
       </Select>
     );
 
     await userEvent.click(screen.getByText("Velg hunderase"));
 
-    expect(screen.getByRole("menuitem", { name: "dog1" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "dog2" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "dog3" })).toBeInTheDocument();
+    expect(screen.getByText("Dog 1")).toBeInTheDocument();
+    expect(screen.getByText("Dog 2")).toBeInTheDocument();
+    expect(screen.getByText("Dog 3")).toBeInTheDocument();
+  });
+
+  it("should show the name upon selecting an option", async () => {
+    render(
+      <Select>
+        <Select.Trigger>Velg hunderase</Select.Trigger>
+        <Select.Content>
+          {options.map((option) => (
+            <Select.Item key={option.value} {...option} />
+          ))}
+        </Select.Content>
+      </Select>
+    );
+
+    await userEvent.click(screen.getByText("Velg hunderase"));
+    await userEvent.click(screen.getByText("Dog 1"));
+
+    expect(screen.getByText("Dog 1")).toBeInTheDocument();
+  });
+
+  it("should keep focus on the trigger when option is selected", async () => {
+    render(
+      <Select>
+        <Select.Trigger>Velg hunderase</Select.Trigger>
+        <Select.Content>
+          {options.map((option) => (
+            <Select.Item
+              key={option.value}
+              value={option.value}
+              name={option.name}
+              description={option.description}
+            />
+          ))}
+        </Select.Content>
+      </Select>
+    );
+
+    const input = screen.getByText("Velg hunderase");
+    expect(input).not.toHaveFocus();
+    await userEvent.click(input);
+    expect(input).toHaveFocus();
+
+    await userEvent.click(screen.getByText("Dog 1"));
+
+    expect(screen.getByText("Dog 1")).toHaveFocus();
   });
 });

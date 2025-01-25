@@ -173,7 +173,7 @@ export const SelectItem: React.FC<SelectItemProps> = ({
 
   const handleSelectedOptionChange = useCallback(() => {
     onSelectedOptionChange(name, value);
-  }, [onSelectedOptionChange, value, name]);
+  }, [onSelectedOptionChange, name, value]);
 
   const isNameOverflowing = useElementOverflowingListener(nameRef);
   const isDescriptionOverflowing =
