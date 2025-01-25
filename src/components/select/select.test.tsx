@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { Select } from "./select";
 
@@ -76,13 +77,13 @@ describe("Select", () => {
       </Select>
     );
 
-    const input = screen.getByText("Velg hunderase");
+    const input = screen.getByRole("button", { name: "Velg hunderase" });
     expect(input).not.toHaveFocus();
     await userEvent.click(input);
     expect(input).toHaveFocus();
 
     await userEvent.click(screen.getByText("Dog 1"));
 
-    expect(screen.getByText("Dog 1")).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Dog 1" })).toHaveFocus();
   });
 });
