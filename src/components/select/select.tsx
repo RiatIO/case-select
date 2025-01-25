@@ -8,7 +8,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { useClickOutsideListener } from "../../hooks";
+import {
+  useClickOutsideListener,
+  useElementOverflowingListener,
+} from "../../hooks";
 import { cn } from "../utils";
 
 interface SelectContext {
@@ -126,13 +129,26 @@ export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
 
 interface SelectItemProps {
   value: string;
+  name: string;
+  description?: string;
 }
-export const SelectItem: React.FC<SelectItemProps> = ({ value }) => {
+export const SelectItem: React.FC<SelectItemProps> = ({
+  value,
+  name,
+  description,
+}) => {
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+
   const { onSelectedOptionChange } = useSelectContext();
 
   const handleSelectedOptionChange = useCallback(() => {
     onSelectedOptionChange(value);
   }, [onSelectedOptionChange, value]);
+
+  const isNameOverflowing = useElementOverflowingListener(nameRef);
+  const isDescriptionOverflowing =
+    useElementOverflowingListener(descriptionRef);
 
   return (
     <button
@@ -140,7 +156,20 @@ export const SelectItem: React.FC<SelectItemProps> = ({ value }) => {
       onClick={handleSelectedOptionChange}
       className="w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
     >
-      {value}
+      <h3
+        ref={nameRef}
+        className="text-lg font-semibold truncate"
+        title={isNameOverflowing ? name : undefined}
+      >
+        {name}
+      </h3>
+      <p
+        ref={descriptionRef}
+        className="text-sm text-gray-500 truncate"
+        title={isDescriptionOverflowing ? description : undefined}
+      >
+        {description}
+      </p>
     </button>
   );
 };

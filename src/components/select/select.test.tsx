@@ -17,9 +17,13 @@ describe("Select", () => {
       <Select>
         <Select.Trigger>Velg hunderase</Select.Trigger>
         <Select.Content>
-          <Select.Item value="dog1" />
-          <Select.Item value="dog2" />
-          <Select.Item value="dog3" />
+          <Select.Item value="dog1" name="Dog 1" />
+          <Select.Item value="dog2" name="Dog 2" />
+          <Select.Item
+            value="dog3"
+            name="Dog 3"
+            description="a very long text description to test overflowing...."
+          />
         </Select.Content>
       </Select>
     );
