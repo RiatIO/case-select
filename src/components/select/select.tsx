@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LoaderCircle } from "lucide-react";
 import {
   createContext,
   PropsWithChildren,
@@ -19,6 +19,8 @@ interface SelectContext {
   open: boolean;
   selectedOptionName: string | undefined;
   selectedOptionValue: string | undefined;
+  loading?: boolean;
+  error?: boolean;
   onSelectedOptionChange: (name: string, value: string) => void;
   toggleVisibility: () => void;
   toggleOpen: () => void;
@@ -40,12 +42,14 @@ const useSelectContext = () => {
 interface SelectProps {
   option?: string;
   onChange?: (value: string) => void;
+  loading?: boolean;
+  error?: boolean;
 }
 export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   Trigger: typeof SelectTrigger;
   Content: typeof SelectContent;
   Item: typeof SelectItem;
-} = ({ option, onChange, children }) => {
+} = ({ option, onChange, error, loading, children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -87,6 +91,8 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
         open,
         selectedOptionName,
         selectedOptionValue,
+        loading,
+        error,
         toggleOpen: handleOpen,
         toggleClose: handleClose,
         toggleVisibility: handleToggleVisibility,
@@ -97,6 +103,8 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
       open,
       selectedOptionName,
       selectedOptionValue,
+      loading,
+      error,
       handleOpen,
       handleClose,
       handleToggleVisibility,
@@ -117,16 +125,25 @@ interface SelectTriggerProps {}
 export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
   children,
 }) => {
-  const { open, selectedOptionName, triggerRef, toggleVisibility } =
-    useSelectContext();
+  const {
+    open,
+    selectedOptionName,
+    error,
+    loading,
+    triggerRef,
+    toggleVisibility,
+  } = useSelectContext();
 
   return (
     <button
       ref={triggerRef}
       onClick={toggleVisibility}
+      disabled={loading || error}
       className={cn(
         "flex justify-between w-full px-4 py-3 bg-gray-100 rounded-2xl cursor-pointer focus:bg-select-focus focus:outline-none",
-        open && "bg-select-focus"
+        open && "bg-select-focus",
+        error && "bg-red-100",
+        (error || loading) && "cursor-not-allowed"
       )}
       aria-expanded={open}
       aria-haspopup="menu"
@@ -136,7 +153,7 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
         {selectedOptionName ?? children}
       </div>
 
-      <ChevronDown />
+      {loading ? <LoaderCircle className="animate-spin" /> : <ChevronDown />}
     </button>
   );
 };
