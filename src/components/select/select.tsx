@@ -18,6 +18,7 @@ interface SelectContext {
   toggleVisibility: () => void;
   toggleOpen: () => void;
   toggleClose: () => void;
+  triggerRef?: React.RefObject<HTMLButtonElement>;
 }
 
 const SelectContext = createContext<SelectContext | null>(null);
@@ -38,6 +39,7 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   Item: typeof SelectItem;
 } = ({ children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -52,6 +54,8 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   const handleSelectedOptionChange = useCallback((value: string) => {
     setSelectedOption(value);
     handleClose();
+
+    triggerRef.current?.focus();
   }, []);
 
   const value = useMemo(
@@ -63,6 +67,7 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
         toggleClose: handleClose,
         toggleVisibility: handleToggleVisibility,
         onSelectedOptionChange: handleSelectedOptionChange,
+        triggerRef,
       }) satisfies SelectContext,
     [open, selectedOption, handleOpen, handleClose, handleToggleVisibility]
   );
@@ -80,10 +85,11 @@ interface SelectTriggerProps {}
 export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
   children,
 }) => {
-  const { open, toggleVisibility } = useSelectContext();
+  const { open, triggerRef, toggleVisibility } = useSelectContext();
 
   return (
     <button
+      ref={triggerRef}
       onClick={toggleVisibility}
       className={cn(
         "flex justify-between w-full px-4 py-3 bg-gray-100 rounded-2xl cursor-pointer focus:bg-select-focus focus:outline-none",
