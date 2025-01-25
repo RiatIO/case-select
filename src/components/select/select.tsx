@@ -16,8 +16,9 @@ import { cn } from "../utils";
 
 interface SelectContext {
   open: boolean;
-  selectedOption: string | undefined;
-  onSelectedOptionChange: (value: string) => void;
+  selectedOptionName: string | undefined;
+  selectedOptionValue: string | undefined;
+  onSelectedOptionChange: (name: string, value: string) => void;
   toggleVisibility: () => void;
   toggleOpen: () => void;
   toggleClose: () => void;
@@ -49,13 +50,14 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
 
   const [open, setOpen] = useState(false);
 
-  const [selectedOption, setSelectedOption] = useState<string | undefined>(
-    option
-  );
-  const [prevOption, setPrevOption] = useState<string | undefined>(option);
-  if (prevOption !== option) {
-    setSelectedOption(option);
-    setPrevOption(option);
+  const [selectedOptionName, setSelectedOptionName] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedOptionValue, setSelectedOptionValue] = useState(option);
+  const [prevOptionValue, setPrevOptionValue] = useState(option);
+  if (prevOptionValue !== option) {
+    setSelectedOptionValue(option);
+    setPrevOptionValue(option);
   }
 
   const handleToggleVisibility = useCallback(
@@ -66,12 +68,13 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   const handleClose = useCallback(() => setOpen(false), []);
 
   const handleSelectedOptionChange = useCallback(
-    (value: string) => {
-      setSelectedOption(value);
+    (name: string, value: string) => {
+      setSelectedOptionName(name);
+      setSelectedOptionValue(value);
+
       onChange?.(value);
 
       handleClose();
-
       triggerRef.current?.focus();
     },
     [handleClose, onChange]
@@ -81,14 +84,23 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
     () =>
       ({
         open,
-        selectedOption,
+        selectedOptionName,
+        selectedOptionValue,
         toggleOpen: handleOpen,
         toggleClose: handleClose,
         toggleVisibility: handleToggleVisibility,
         onSelectedOptionChange: handleSelectedOptionChange,
         triggerRef,
       }) satisfies SelectContext,
-    [open, selectedOption, handleOpen, handleClose, handleToggleVisibility]
+    [
+      open,
+      selectedOptionName,
+      selectedOptionValue,
+      handleOpen,
+      handleClose,
+      handleToggleVisibility,
+      handleSelectedOptionChange,
+    ]
   );
 
   useClickOutsideListener(containerRef, handleClose);
@@ -104,7 +116,7 @@ interface SelectTriggerProps {}
 export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
   children,
 }) => {
-  const { open, selectedOption, triggerRef, toggleVisibility } =
+  const { open, selectedOptionName, triggerRef, toggleVisibility } =
     useSelectContext();
 
   return (
@@ -118,7 +130,7 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
       aria-expanded={open}
       aria-haspopup="menu"
     >
-      {selectedOption ?? children}
+      {selectedOptionName ?? children}
       <ChevronDown />
     </button>
   );
@@ -160,8 +172,8 @@ export const SelectItem: React.FC<SelectItemProps> = ({
   const { onSelectedOptionChange } = useSelectContext();
 
   const handleSelectedOptionChange = useCallback(() => {
-    onSelectedOptionChange(value);
-  }, [onSelectedOptionChange, value]);
+    onSelectedOptionChange(name, value);
+  }, [onSelectedOptionChange, value, name]);
 
   const isNameOverflowing = useElementOverflowingListener(nameRef);
   const isDescriptionOverflowing =
@@ -172,7 +184,7 @@ export const SelectItem: React.FC<SelectItemProps> = ({
       role="menuitem"
       onClick={handleSelectedOptionChange}
       className={cn(
-        "w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none",
+        "w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
         // selectedOption === value && "bg-sky-500"
       )}
     >
