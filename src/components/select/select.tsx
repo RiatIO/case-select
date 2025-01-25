@@ -148,7 +148,7 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
       aria-expanded={open}
       aria-haspopup="menu"
     >
-      <div className="flex gap-2 flex-1 items-center">
+      <div className="flex gap-3 flex-1 items-center">
         {selectedOptionName ? renderTextColorDot(selectedOptionName) : null}
         {selectedOptionName ?? children}
       </div>
@@ -206,7 +206,7 @@ export const SelectItem: React.FC<SelectItemProps> = ({
       role="menuitem"
       onClick={handleSelectedOptionChange}
       className={cn(
-        "flex items-center gap-2 w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
+        "flex items-center gap-3 w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
         // selectedOption === value && "bg-sky-500"
       )}
     >
@@ -214,7 +214,7 @@ export const SelectItem: React.FC<SelectItemProps> = ({
       <div className="overflow-hidden">
         <h3
           ref={nameRef}
-          className="text-lg text-left font-semibold truncate"
+          className="text-lg text-left truncate"
           title={isNameOverflowing ? name : undefined}
         >
           {name}
