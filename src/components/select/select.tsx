@@ -14,6 +14,7 @@ import {
 } from "../../hooks";
 import { cn } from "../utils";
 import { textToColor } from "../../utils/text-to-color";
+import React from "react";
 
 interface SelectContext {
   open: boolean;
@@ -27,7 +28,6 @@ interface SelectContext {
   toggleClose: () => void;
   triggerRef?: React.RefObject<HTMLButtonElement>;
 }
-
 const SelectContext = createContext<SelectContext | null>(null);
 const useSelectContext = () => {
   const context = useContext(SelectContext);
@@ -177,12 +177,20 @@ export const SelectContent: React.FC<PropsWithChildren<SelectContentProps>> = ({
     return null;
   }
 
+  const renderContent = () => {
+    if (React.Children.count(children) === 0) {
+      return <p className="p-4">No options found</p>;
+    }
+
+    return <>{children}</>;
+  };
+
   return (
     <div
       className="absolute z-10 w-full mt-2 bg-white shadow-xl rounded-xl max-h-64 overflow-y-auto"
       role="menu"
     >
-      {children}
+      {renderContent()}
     </div>
   );
 };

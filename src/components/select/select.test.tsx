@@ -14,13 +14,16 @@ const options = [
 ];
 
 describe("Select", () => {
-  it("should render the component", () => {
+  it("should render the component and empty state", async () => {
     render(
       <Select>
         <Select.Trigger>Select me</Select.Trigger>
+        <Select.Content></Select.Content>
       </Select>
     );
-    expect(screen.getByText("Select me")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Select me"));
+
+    expect(screen.getByText("No options found")).toBeInTheDocument();
   });
 
   it("should show options when clicking on the trigger", async () => {
