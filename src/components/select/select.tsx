@@ -16,7 +16,7 @@ import { cn } from "../utils";
 
 interface SelectContext {
   open: boolean;
-  selectedOption: string | null;
+  selectedOption: string | undefined;
   onSelectedOptionChange: (value: string) => void;
   toggleVisibility: () => void;
   toggleOpen: () => void;
@@ -35,17 +35,28 @@ const useSelectContext = () => {
   return context;
 };
 
-interface SelectProps {}
+interface SelectProps {
+  option?: string;
+  onChange?: (value: string) => void;
+}
 export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   Trigger: typeof SelectTrigger;
   Content: typeof SelectContent;
   Item: typeof SelectItem;
-} = ({ children }) => {
+} = ({ option, onChange, children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   const [open, setOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  const [selectedOption, setSelectedOption] = useState<string | undefined>(
+    option
+  );
+  const [prevOption, setPrevOption] = useState<string | undefined>(option);
+  if (prevOption !== option) {
+    setSelectedOption(option);
+    setPrevOption(option);
+  }
 
   const handleToggleVisibility = useCallback(
     () => setOpen((prevState) => !prevState),
@@ -54,12 +65,17 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   const handleOpen = useCallback(() => setOpen(true), []);
   const handleClose = useCallback(() => setOpen(false), []);
 
-  const handleSelectedOptionChange = useCallback((value: string) => {
-    setSelectedOption(value);
-    handleClose();
+  const handleSelectedOptionChange = useCallback(
+    (value: string) => {
+      setSelectedOption(value);
+      onChange?.(value);
 
-    triggerRef.current?.focus();
-  }, []);
+      handleClose();
+
+      triggerRef.current?.focus();
+    },
+    [handleClose, onChange]
+  );
 
   const value = useMemo(
     () =>
@@ -78,7 +94,7 @@ export const Select: React.FC<PropsWithChildren<SelectProps>> & {
   useClickOutsideListener(containerRef, handleClose);
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative w-128" ref={containerRef}>
       <SelectContext.Provider value={value}>{children}</SelectContext.Provider>
     </div>
   );
@@ -88,7 +104,8 @@ interface SelectTriggerProps {}
 export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
   children,
 }) => {
-  const { open, triggerRef, toggleVisibility } = useSelectContext();
+  const { open, selectedOption, triggerRef, toggleVisibility } =
+    useSelectContext();
 
   return (
     <button
@@ -101,7 +118,7 @@ export const SelectTrigger: React.FC<PropsWithChildren<SelectTriggerProps>> = ({
       aria-expanded={open}
       aria-haspopup="menu"
     >
-      {children}
+      {selectedOption ?? children}
       <ChevronDown />
     </button>
   );
@@ -154,7 +171,10 @@ export const SelectItem: React.FC<SelectItemProps> = ({
     <button
       role="menuitem"
       onClick={handleSelectedOptionChange}
-      className="w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none"
+      className={cn(
+        "w-full px-4 py-2 hover:bg-select-focus focus:bg-select-focus focus:outline-none",
+        // selectedOption === value && "bg-sky-500"
+      )}
     >
       <h3
         ref={nameRef}
